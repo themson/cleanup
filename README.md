@@ -1,4 +1,6 @@
 cleanup
 =======
+Self-Deleting File Examples
 
-self-deleting file examples
+Example code that uses remote thread injection to create self deleting PE files.
+
