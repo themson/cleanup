@@ -132,7 +132,7 @@ def inject_rthread(shellcode, child_pid):
     # WriteProcessMemory Arguments
     lpBuffer = (ctypes.c_char * byte_length).from_buffer(shellcode)  # buffer of shell code chars
     nSize = byte_length
-    lpNumberOfBytesWritten = None  # do not return byte writen length
+    lpNumberOfBytesWritten = None  # do not return bytes writen length
 
     #CreateRemoteThread Arguments
     lpThreadAttributes = None  # use default security descriptor
