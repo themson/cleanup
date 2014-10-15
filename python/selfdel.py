@@ -78,7 +78,7 @@ def generate_shellcode(pid, path):
     :return shellcode: bytearray
     """
     nullbyte = b'\x00'
-    cmd_string = b'cmd /c taskkill /F /PID > nul ' + pid + b' && ping 1.1.1.1 -n 1 -w 500 > nul & del /F /Q ' + path
+    cmd_string = b'cmd /c taskkill /F /PID > nul {} && ping 1.1.1.1 -n 1 -w 500 > nul & del /F /Q {}'.format(pid, path)
     return bytearray(SHELLCODE + cmd_string + nullbyte)
 
 
