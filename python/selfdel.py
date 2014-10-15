@@ -178,8 +178,8 @@ def clean_up():
 def main():
     print("Self-Deletion via remote thread injection demo.")
     clean_up()
-    while 1:
-        pass
+    while True:
+        sleep(1)
 
 
 if __name__ == "__main__":
